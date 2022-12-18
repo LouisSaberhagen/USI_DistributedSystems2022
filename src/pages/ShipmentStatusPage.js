@@ -21,6 +21,7 @@ export default function ShipmentStatusPage(props) {
   const [shipperAddress, setShipperaAddress] = React.useState("");
   const [shipperName, setShipperName] = React.useState("");
   const [shipperNotes, setShipperNotes] = React.useState("");
+  const [isShipmentRefunded, setIsShipmentRefunded] = React.useState(false);
 
   React.useEffect(()=> {
     loadShipment(id);
@@ -43,6 +44,7 @@ export default function ShipmentStatusPage(props) {
     setProductSeller(shipment.seller);
     setProductBuyer(shipment.buyer);
     setShipperNotes(shipment.shipper_notes);
+    setIsShipmentRefunded(shipment.refunded);
     setShipperName(_shipperName);
     console.log({shipment});
   }
@@ -133,6 +135,12 @@ export default function ShipmentStatusPage(props) {
       <div>
       <span>Shipper Notes: <i>{shipperNotes}</i></span>
       </div> <br></br>
+
+
+      <div>
+      <span>Refunded: <b>{JSON.stringify(isShipmentRefunded)}</b></span>
+      </div> <br></br>
+
 
 
       <div>

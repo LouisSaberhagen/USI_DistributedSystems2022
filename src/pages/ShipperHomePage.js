@@ -46,6 +46,7 @@ export default function ShipperHomePage(props) {
         seller: shipment.seller,
         shipper: shipment.shipper,
         buyer: shipment.buyer,
+        status: shipment.status.toNumber(),
       }
 
       if (shipment.shipper.toLowerCase() === props.account.toLowerCase()){
@@ -64,6 +65,16 @@ export default function ShipperHomePage(props) {
   );
   }
 
+  const statusEnum = {
+    0: "OnSale",
+    1: "Ordered",
+    2: "FailedBeforeTransit",
+    3: "InTransit",
+    4: "FailedBeforeDelivery",
+    5: "Delivered"
+  };
+
+
   return (
     <div>
       <h1>Shipments</h1>
@@ -71,6 +82,7 @@ export default function ShipperHomePage(props) {
         <thead>
         <tr>
             <th>Shipment</th>
+            <th>Status</th>
             <th>Seller Address</th>
             <th>Buyer Address</th>
         </tr>
@@ -81,6 +93,7 @@ export default function ShipperHomePage(props) {
             return (
               <tr key={shipment.id}>
                 <td><Link to={`/shipper/update/${shipment.id}`}>{shipment.title}</Link></td>
+                <td><span>{statusEnum[shipment.status]}</span></td>
                 <td><span title={shipment.seller}>{parse(truncateEthAddress(shipment.seller, 15))}</span></td>
                 <td><span title={shipment.buyer}>{parse(truncateEthAddress(shipment.buyer, 15))}</span></td>
               </tr>

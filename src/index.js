@@ -13,6 +13,7 @@ import {
 // routes
 import BuyerHomePage from './pages/BuyerHomePage';
 import SellerHomePage from './pages/SellerHomePage';
+import SellerCreateShipmentPage from './pages/SellerCreateShipmentPage';
 import ShipmentBuyPage from './pages/ShipmentBuyPage';
 import ShipmentStatusPage from './pages/ShipmentStatusPage';
 import ShipperHomePage from './pages/ShipperHomePage';
@@ -75,10 +76,13 @@ function AppRoutes() {
 
         <Switch>
           <Route exact path="/">
-            <BuyerHomePage />
+            <BuyerHomePage account={currentAccount} />
           </Route>
           <Route exact path="/seller">
-            <SellerHomePage />
+            <SellerHomePage account={currentAccount} />
+          </Route>
+          <Route exact path="/seller/create_shipment">
+            <SellerCreateShipmentPage account={currentAccount} />
           </Route>
           <Route exact path="/shipper">
             <ShipperHomePage account={currentAccount} />
