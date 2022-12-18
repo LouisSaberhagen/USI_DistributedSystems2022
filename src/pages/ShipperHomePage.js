@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import detectEthereumProvider from '@metamask/detect-provider';
 import parse from 'html-react-parser'
 import truncateEthAddress from 'truncate-eth-address'
+import web3 from 'web3';
 
 const ethershipArtifact = require("../contracts/Ethership.json"); 
 const contract = require("@truffle/contract");
@@ -11,6 +12,7 @@ export default function ShipperHomePage(props) {
 
   const [metamaskIsConnected, setMetamaskIsConnected] = React.useState(false);
   const [shipments, setShipments] = React.useState([]);
+  const [shipperBalance, setShipperBalance] = React.useState("");
 
 
   //Use react use effect on props.currentAccount to set metamaskIsConnected
@@ -20,13 +22,33 @@ export default function ShipperHomePage(props) {
     }else{
       setMetamaskIsConnected(false);
     }
+
+    if (props.account){
+      loadShipments();
+      loadShipperBalance();
+    }
   }, [props.account]);
 
-  React.useEffect(() => {
-    if (!metamaskIsConnected) return;
+  const loadShipperBalance = async () => {
+    const ethershipContract = contract(ethershipArtifact);
+    const provider = await detectEthereumProvider()
+    ethershipContract.setProvider(provider);
+    const ethershipInstance = await ethershipContract.deployed();
+    const balance = await ethershipInstance.shippersBalance(props.account);
+    // convert balance to ETH using web3.utils.fromWei
+    const balanceInEth = web3.utils.fromWei(balance, 'ether');
+    setShipperBalance(balanceInEth);
+  }
 
-    loadShipments();
-  }, [metamaskIsConnected]);
+  const handleShipperWithdraw = async () => {
+    const ethershipContract = contract(ethershipArtifact);
+    const provider = await detectEthereumProvider()
+    ethershipContract.setProvider(provider);
+    const ethershipInstance = await ethershipContract.deployed();
+    await ethershipInstance.shipperWithdraw({from: props.account});
+    setShipperBalance(0);
+  }
+
 
     // TODO: Don't display shipments that are not onSale
   const loadShipments = async () => {
@@ -78,6 +100,9 @@ export default function ShipperHomePage(props) {
   return (
     <div>
       <h1>Shipments</h1>
+      <h2>Balance: {shipperBalance} ETH</h2>
+      <button onClick={handleShipperWithdraw}>Withdraw</button>
+      <br/><br/>
       <table>
         <thead>
         <tr>

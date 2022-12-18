@@ -226,12 +226,14 @@ contract Ethership {
         uint balance = sellersBalance[msg.sender];
         require(balance > 0, "Your balance must be positive");
 
+        sellersBalance[msg.sender] = 0;
         payable(msg.sender).transfer(balance);
     }
     function shipperWithdraw() public {
         uint balance = shippersBalance[msg.sender];
         require(balance > 0, "Your balance must be positive");
 
+        shippersBalance[msg.sender] = 0;
         payable(msg.sender).transfer(balance);
     }
 

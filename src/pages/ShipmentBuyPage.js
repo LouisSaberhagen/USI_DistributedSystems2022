@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import detectEthereumProvider from '@metamask/detect-provider';
 import web3 from 'web3';
+import {useHistory} from 'react-router-dom';
 
 const ethershipArtifact = require("../contracts/Ethership.json"); 
 const contract = require("@truffle/contract");
@@ -12,6 +13,7 @@ const contract = require("@truffle/contract");
 
 export default function ShipmentBuyPage(props) {
   let { id } = useParams();
+  let history = useHistory();
 
   const [productTitle, setProducTitle] = React.useState("");
   const [productPrice, setProductPrice] = React.useState("");
@@ -95,7 +97,7 @@ export default function ShipmentBuyPage(props) {
       console.warn({e});
     }
 
-    window.location.href = `/shipment/status/${id}`;
+    history.push(`/shipment/status/${id}`); 
   }
 
 

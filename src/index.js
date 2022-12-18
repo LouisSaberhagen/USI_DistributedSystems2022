@@ -7,7 +7,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  useLocation
+  useLocation,
+  Link
 } from "react-router-dom";
 
 // routes
@@ -57,19 +58,19 @@ function AppRoutes() {
       <div className="app">
         <div className="header">
           <div className="actions">
-          <h1><a style={{color: 'black'}} href="/">Ethership</a></h1>
+          <h1><Link style={{color: 'black'}} to="/">Ethership</Link></h1>
           <button onClick={handleConnectButton}>Connect</button>
           <span>{currentAccount}</span>
           </div>
           <div className="roles">
             <div className={ currentRole == 'buyer' ? 'active' : ''}>
-              <a href="/">Buyer</a>
+              <Link to="/">Buyer</Link>
             </div>
             <div className={ currentRole == 'seller' ? 'active' : ''}>
-              <a  href="/seller">Seller</a>
+              <Link to="/seller">Seller</Link>
             </div>
             <div className={ currentRole == 'shipper' ? 'active' : ''}>
-              <a href="/shipper">Shipper</a>
+              <Link to="/shipper">Shipper</Link>
             </div>
           </div>
         </div>

@@ -23,14 +23,22 @@ export default function SellerHomePage(props) {
     }else{
       setMetamaskIsConnected(false);
     }
+
+    if (props.account){
+      loadShipments();
+      loadSellerBalance();
+    }
   }, [props.account]);
   
-  React.useEffect(() => {
-    if (!metamaskIsConnected) return;
 
-    loadShipments();
-    loadSellerBalance();
-  }, [metamaskIsConnected]);
+  const handleSellerWithdraw = async () => {
+    const ethershipContract = contract(ethershipArtifact);
+    const provider = await detectEthereumProvider()
+    ethershipContract.setProvider(provider);
+    const ethershipInstance = await ethershipContract.deployed();
+    await ethershipInstance.sellerWithdraw({from: props.account});
+    setSellerBalance(0);
+  }
 
   const loadSellerBalance = async () => {
     const ethershipContract = contract(ethershipArtifact);
@@ -91,7 +99,7 @@ export default function SellerHomePage(props) {
     <div>
       <h1>Seller Home Page</h1>
       <h2>Balance: {sellerBalance} ETH</h2><br/>
-      <button>Withdraw</button><br/>
+      <button onClick={handleSellerWithdraw}>Withdraw</button><br/>
       <h2>My Products For Sale</h2>
       {
         shipments.length > 0
