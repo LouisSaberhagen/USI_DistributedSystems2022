@@ -2,7 +2,7 @@ let bip39 = require('bip39');
 let ethereumjs_wallet = require('ethereumjs-wallet');
 let {hdkey} = ethereumjs_wallet;
 let Ethership = artifacts.require("Ethership");
-
+let web3 = require('web3');
 
 async function generateWallets(mnemonics, n, hdPathIndex = 0) {
   const hdwallet = hdkey.fromMasterSeed(await bip39.mnemonicToSeed(mnemonics))
@@ -12,6 +12,11 @@ async function generateWallets(mnemonics, n, hdPathIndex = 0) {
     result.push(node.getWallet())
   }
   return result;
+}
+
+// ether to wei conversion function
+function etherToWei(ether) {
+  return web3.utils.toWei(ether, 'ether');
 }
 
 module.exports = async function(done) {
@@ -47,13 +52,13 @@ module.exports = async function(done) {
 
     // Create Shipments Transactions
     console.log("\nInitial createShipment calls:");
-    const create_shipment_tx_1 = await instance.createShipment(100, "5 barrels of oil");
+    const create_shipment_tx_1 = await instance.createShipment(etherToWei('0.1'), "5 barrels of oil");
     console.log("createShipment Transaction(1):", create_shipment_tx_1.tx);
 
-    const create_shipment_tx_2 = await instance.createShipment(400, "22 barrels of oil");
+    const create_shipment_tx_2 = await instance.createShipment(etherToWei('0.4'), "22 barrels of oil");
     console.log("createShipment Transaction(2):", create_shipment_tx_2.tx);
 
-    const create_shipment_tx_3 = await instance.createShipment(800, "48 barrels of oil");
+    const create_shipment_tx_3 = await instance.createShipment(etherToWei('0.8'), "48 barrels of oil");
     console.log("createShipment Transaction(3):", create_shipment_tx_3.tx);
 
 

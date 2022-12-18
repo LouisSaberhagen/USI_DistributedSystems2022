@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import detectEthereumProvider from '@metamask/detect-provider';
+import web3 from 'web3';
 
 const ethershipArtifact = require("../contracts/Ethership.json"); 
 const contract = require("@truffle/contract");
@@ -31,7 +32,7 @@ export default function HomePage() {
         id: shipment.id.toNumber(),
         title: shipment.title,
         seller: shipment.seller,
-        price: shipment.price.toNumber()
+        price: web3.utils.fromWei(shipment.price, 'ether'),
       }
       if (shipment.status.toNumber() === 0){
         _shipments.push(_shipment);
@@ -42,28 +43,37 @@ export default function HomePage() {
 
   return (
     <div className="App">
-      <table>
-        <thead>
-        <tr>
-            <th>Shipment</th>
-            <th>Seller Address</th>
-            <th>Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        {
-          shipments.map((shipment) => {
-            return (
-              <tr key={shipment.id}>
-                <td><Link to={`/shipment/buy/${shipment.id}`}>{shipment.title}</Link></td>
-                <td>{shipment.seller}</td>
-                <td>{shipment.price}</td>
-              </tr>
-            );
-          })
-        }
-        </tbody>
-    </table>
+      <h2>Shipments for Sale</h2>
+      {
+        shipments.length === 0
+        ? (<p>No shipments for sale.</p>)
+        : (
+          <table>
+            <thead>
+            <tr>
+                <th>Shipment</th>
+                <th>Seller Address</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            {
+              shipments.map((shipment) => {
+                return (
+                  <tr key={shipment.id}>
+                    <td><Link to={`/shipment/buy/${shipment.id}`}>{shipment.title}</Link></td>
+                    <td>{shipment.seller}</td>
+                    <td>{shipment.price} ether</td>
+                  </tr>
+                );
+              })
+            }
+            </tbody>
+          </table>
+        )
+      }
+      <h2>Your shipments</h2>
+      <span>Please connect to see your shipments</span>
     </div>
   );
 }

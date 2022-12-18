@@ -1,8 +1,10 @@
 import React from 'react';
 import {
-  useParams
+  useParams,
+  Redirect
 } from "react-router-dom";
 import detectEthereumProvider from '@metamask/detect-provider';
+import web3 from 'web3';
 
 const ethershipArtifact = require("../contracts/Ethership.json"); 
 const contract = require("@truffle/contract");
@@ -12,7 +14,7 @@ export default function ShipmentBuyPage(props) {
   let { id } = useParams();
 
   const [productTitle, setProducTitle] = React.useState("");
-  const [productPrice, setProductPrice] = React.useState(0);
+  const [productPrice, setProductPrice] = React.useState("");
   const [shipperAddresses, setShipperaAddresses] = React.useState([]);
   const [shipperNames, setShipperNames] = React.useState([]);
 
@@ -68,7 +70,7 @@ export default function ShipmentBuyPage(props) {
     const shipment = await ethershipInstance.shipments(id);
 
     setProducTitle(shipment.title);
-    setProductPrice(shipment.price.toNumber());
+    setProductPrice(web3.utils.fromWei(shipment.price, 'ether'));
   }
 
   const handleBuyButon = async () => {
@@ -82,14 +84,18 @@ export default function ShipmentBuyPage(props) {
     const incoterm = document.getElementById("incoterms").value;
     const shipper = document.getElementById("shipper").value;
 
+    const _shipment = await ethershipInstance.shipments(id);
+
     console.log({incoterm, shipper});
 
     try {
-      await ethershipInstance.buyShipment(id, incoterm, shipper, {from: props.account, value: productPrice});
+      await ethershipInstance.buyShipment(id, incoterm, shipper, {from: props.account, value: _shipment.price});
     }catch (e){
       alert("Error buying shipment");
       console.warn({e});
     }
+
+    window.location.href = `/shipment/status/${id}`;
   }
 
 
@@ -102,7 +108,7 @@ export default function ShipmentBuyPage(props) {
       </div>
 
       <div className="form-row">
-        <span>Price: {productPrice}</span>
+        <span>Price: {productPrice} ether</span>
       </div>
 
       <div className="form-row">

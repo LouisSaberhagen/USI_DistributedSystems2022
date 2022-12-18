@@ -6,18 +6,22 @@ import './global.css';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  useLocation
 } from "react-router-dom";
 
 // routes
 import BuyerHomePage from './pages/BuyerHomePage';
 import SellerHomePage from './pages/SellerHomePage';
 import ShipmentBuyPage from './pages/ShipmentBuyPage';
-
+import ShipmentStatusPage from './pages/ShipmentStatusPage';
+import ShipperHomePage from './pages/ShipperHomePage';
+import ShipperUpdatePage from './pages/ShipperUpdatePage';
 
 function AppRoutes() {
   const [currentAccount, setCurrentAccount] = React.useState("");
   const [currentRole, setCurrentRole] = React.useState("buyer");
+  let location = useLocation();
 
   const handleConnectButton = () => {
     // request web3 metamask access
@@ -31,54 +35,66 @@ function AppRoutes() {
     );
   }
 
+  React.useEffect(() => {
+    if (location.pathname.includes('seller')) {
+      setCurrentRole('seller');
+    } else if (location.pathname.includes('shipper')) {
+      setCurrentRole('shipper');
+    } else {
+      setCurrentRole('buyer');
+    }
+  }, [location]);
+
+  // TODO: Do this based on router uri change
   const switchRole = (role, e) => {
     e.preventDefault();
     setCurrentRole(role);
   }
 
   return (
-    <Router>
+    <>
       <div className="app">
         <div className="header">
           <div className="actions">
-          <h1>Ethership</h1>
+          <h1><a style={{color: 'black'}} href="/">Ethership</a></h1>
           <button onClick={handleConnectButton}>Connect</button>
           <span>{currentAccount}</span>
           </div>
           <div className="roles">
             <div className={ currentRole == 'buyer' ? 'active' : ''}>
-              <a onClick={(eventHandler)=> switchRole('buyer', eventHandler)} href="/">Buyer</a>
+              <a href="/">Buyer</a>
             </div>
             <div className={ currentRole == 'seller' ? 'active' : ''}>
-              <a onClick={(eventHandler)=> switchRole('seller', eventHandler)} href="/">Seller</a>
+              <a  href="/seller">Seller</a>
             </div>
             <div className={ currentRole == 'shipper' ? 'active' : ''}>
-              <a onClick={(eventHandler)=> switchRole('shipper', eventHandler)} href="/">Shipper</a>
+              <a href="/shipper">Shipper</a>
             </div>
           </div>
         </div>
 
         <Switch>
-          {
-            currentRole === "buyer" && (
-              <Route exact path="/">
-                <BuyerHomePage />
-              </Route>
-            )
-          }
-          {
-            currentRole === "seller" && (
-              <Route exact path="/">
-                <SellerHomePage />
-              </Route>
-            )
-          }
+          <Route exact path="/">
+            <BuyerHomePage />
+          </Route>
+          <Route exact path="/seller">
+            <SellerHomePage />
+          </Route>
+          <Route exact path="/shipper">
+            <ShipperHomePage account={currentAccount} />
+          </Route>
+          <Route exact path="/shipper/update/:id">
+            <ShipperUpdatePage account={currentAccount} />
+          </Route>
           <Route path="/shipment/buy/:id">
             <ShipmentBuyPage account={currentAccount} />
           </Route>
+          <Route path="/shipment/status/:id">
+            <ShipmentStatusPage account={currentAccount} />
+          </Route>
         </Switch>
       </div>
-    </Router>
+      </>
   );
 }
 
@@ -86,6 +102,8 @@ function AppRoutes() {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AppRoutes />
+    <Router>
+      <AppRoutes />
+    </Router>
   </React.StrictMode>
 );

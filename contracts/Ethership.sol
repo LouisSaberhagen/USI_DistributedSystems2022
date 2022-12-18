@@ -33,6 +33,7 @@ contract Ethership {
         address shipper;
         address buyer;
         string shipper_notes;
+        bool refunded;
     }
 
     mapping(uint => Shipment) public shipments;
@@ -63,7 +64,7 @@ contract Ethership {
         address _shipper = address(0);
         address _buyer = address(0);
         string memory _notes = "";
-        shipments[_id] = Shipment(_id, _price, _title, _contracted_incoterm, _status, _seller, _shipper, _buyer, _notes);
+        shipments[_id] = Shipment(_id, _price, _title, _contracted_incoterm, _status, _seller, _shipper, _buyer, _notes, false);
 
         totalShipments++;
     }
@@ -206,6 +207,7 @@ contract Ethership {
     function buyerWithdraw(uint _id) public {
         Shipment memory _shipment = shipments[_id];
         require(_shipment.price > 0, "Shipment not existant");
+        require(_shipment.refunded == false, "Shipment already refunded");
 
         require(_shipment.buyer == msg.sender, "You are not the buyer of this shipment");
 
@@ -214,6 +216,9 @@ contract Ethership {
 
         bool canWithdraw = canBuyerWithdrawFunds(_shipment.contracted_incoterm, _shipment.status);
         require(canWithdraw, "You are not allowed to withdraw funds");
+
+        _shipment.refunded = true;
+        shipments[_id] = _shipment;
 
         payable(_shipment.buyer).transfer(_shipment.price);
     }
